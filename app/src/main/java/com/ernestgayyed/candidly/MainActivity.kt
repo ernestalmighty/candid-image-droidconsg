@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import java.io.File
 import java.util.*
 
@@ -26,18 +27,25 @@ private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 class MainActivity : AppCompatActivity(), GalleryAdapterListener {
 
     private lateinit var galleryView: RecyclerView
+    private lateinit var swipeImage: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         galleryView = findViewById(R.id.gallery_view)
+        swipeImage = findViewById(R.id.swipe_gallery)
 
         val galleryAdapter = GalleryAdapter(this, this)
         galleryAdapter.imageList = getAllShownImagesPath()
 
         galleryView.layoutManager = GridLayoutManager(this, 3)
         galleryView.adapter = galleryAdapter
+
+        swipeImage.setOnRefreshListener {
+            swipeImage.isRefreshing = false
+            galleryAdapter.setData(getAllShownImagesPath())
+        }
 
         // Request camera permissions
         if (allPermissionsGranted()) {

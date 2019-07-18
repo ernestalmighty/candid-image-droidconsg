@@ -21,6 +21,11 @@ class GalleryAdapter(val context: Context, val galleryAdapterListener: GalleryAd
         return imageList.size
     }
 
+    fun setData(imageList: List<String>) {
+        this.imageList = imageList
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val imageItem = holder.itemView.findViewById<ImageView>(R.id.img_item)
 
