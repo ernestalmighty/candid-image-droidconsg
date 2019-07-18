@@ -49,10 +49,6 @@ class MainActivity : AppCompatActivity(), GalleryAdapterListener {
 
         // Request camera permissions
         if (allPermissionsGranted()) {
-            val intent = Intent(this@MainActivity, CameraService::class.java)
-            val pintent = PendingIntent.getService(this@MainActivity, 0, intent, 0)
-            val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarm.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, (30 * 1000).toLong(), pintent)
             startService(Intent(this, CameraService::class.java))
         } else {
             ActivityCompat.requestPermissions(

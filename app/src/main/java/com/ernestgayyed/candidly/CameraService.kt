@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationCompat.PRIORITY_MIN
 import androidx.lifecycle.LifecycleService
 import com.google.android.gms.tasks.OnFailureListener
@@ -23,6 +24,11 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import android.os.SystemClock
+import android.app.AlarmManager
+import android.app.PendingIntent
+
+
 
 
 private var lastAnalyzedTimestamp = 0L
@@ -47,7 +53,7 @@ class CameraService : LifecycleService() {
         val notificationBuilder = NotificationCompat.Builder(this, channelId )
         val notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.mipmap.sym_def_app_icon)
-            .setPriority(PRIORITY_MIN)
+            .setPriority(PRIORITY_MAX)
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()
 
@@ -98,6 +104,14 @@ class CameraService : LifecycleService() {
         CameraX.bindToLifecycle( this, preview, imageCapture, analyzerUseCase)
 
         return START_STICKY
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent) {
+        //create an intent that you want to start again.
+        val intent = Intent(this, CameraService::class.java)
+        val pintent = PendingIntent.getService(this, 0, intent, 0)
+        val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, (30 * 1000).toLong(), pintent)
     }
 }
 
