@@ -50,7 +50,7 @@ class CameraService : LifecycleService() {
                 ""
             }
 
-        val notificationBuilder = NotificationCompat.Builder(this, channelId )
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
         val notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.mipmap.sym_def_app_icon)
             .setPriority(PRIORITY_MAX)
@@ -61,9 +61,11 @@ class CameraService : LifecycleService() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel(channelId: String, channelName: String): String{
-        val chan = NotificationChannel(channelId,
-            channelName, NotificationManager.IMPORTANCE_NONE)
+    private fun createNotificationChannel(channelId: String, channelName: String): String {
+        val chan = NotificationChannel(
+            channelId,
+            channelName, NotificationManager.IMPORTANCE_NONE
+        )
         chan.lightColor = Color.BLUE
         chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -83,11 +85,13 @@ class CameraService : LifecycleService() {
 
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
             val analyzerThread = HandlerThread(
-                "LabelAnalysis").apply { start() }
+                "LabelAnalysis"
+            ).apply { start() }
             setCallbackHandler(Handler(analyzerThread.looper))
             setLensFacing(CameraX.LensFacing.FRONT)
             setImageReaderMode(
-                ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+                ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE
+            )
         }
             .build()
 
@@ -101,17 +105,14 @@ class CameraService : LifecycleService() {
 
         imageCapture = ImageCapture(imageCaptureConfig)
 
-        CameraX.bindToLifecycle( this, preview, imageCapture, analyzerUseCase)
+        CameraX.bindToLifecycle(this, preview, imageCapture, analyzerUseCase)
+
+        val serviceIntent = Intent(applicationContext, CameraService::class.java)
+        val pendingIntent = PendingIntent.getService(this, 1, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime() + 30000, pendingIntent)
 
         return START_STICKY
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent) {
-        //create an intent that you want to start again.
-        val intent = Intent(this, CameraService::class.java)
-        val pintent = PendingIntent.getService(this, 0, intent, 0)
-        val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, (30 * 1000).toLong(), pintent)
     }
 }
 
