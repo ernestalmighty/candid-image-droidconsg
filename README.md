@@ -1,4 +1,4 @@
-# candid-imaging
+# candid-imaging-droidconsg
 droidconsg2019-hackathon
 
 @droidconSG
@@ -12,4 +12,4 @@ The service will be killed when a selfie is captured, and will launch again afte
 
 It is using the CameraX to interface the camera, and the face detection feature from Firebase ML kit to detect a face.
 
-Screenshots can be found here: https://github.com/ernestalmighty/candid-imaging/issues/1
+Screenshots can be found here: https://github.com/ernestalmighty/candid-image-droidconsg/issues/1
