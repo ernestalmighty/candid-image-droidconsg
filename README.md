@@ -6,7 +6,7 @@ droidconsg2019-hackathon
 
 This app for the selfie lovers, integrates CameraX with Firebase ML kit features.
 
-It will take your selfies every 30 seconds(can be configured) while the app is on the background and when a face is detected.
+It will take your selfies every 30 seconds(can be configured) when a face is detected, even when the app is on the background or killed.
 
 The service will be killed when a selfie is captured, and will launch again after 30 seconds. The taken selfies are displayed in the app.
 
