@@ -119,7 +119,7 @@ private class LabelAnalyzer(val cameraService: CameraService) : ImageAnalysis.An
     override fun analyze(image: ImageProxy, rotationDegrees: Int) {
         val currentTimestamp = System.currentTimeMillis()
         if (currentTimestamp - lastAnalyzedTimestamp >=
-            TimeUnit.SECONDS.toMillis(25)) {
+            TimeUnit.SECONDS.toMillis(5)) {
             lastAnalyzedTimestamp = currentTimestamp
         } else {
             return
@@ -164,19 +164,26 @@ private class LabelAnalyzer(val cameraService: CameraService) : ImageAnalysis.An
         val result = detector.detectInImage(labelImage)
             .addOnSuccessListener { faces ->
                 if(faces.size > 0) {
-                    if(!hasCaptured) {
-                        hasCaptured = true
 
-                        val file = createImageFile()
-                        imageCapture.takePicture(file, object : ImageCapture.OnImageSavedListener {
-                            override fun onError(error: ImageCapture.UseCaseError,
-                                                 message: String, exc: Throwable?) {
-                                hasCaptured = false
+                    faces.forEach {
+                        if(it.smilingProbability != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+                            val smilingProb = it.smilingProbability
+
+                            if(smilingProb >= 0.5 && !hasCaptured) {
+                                hasCaptured = true
+
+                                val file = createImageFile()
+                                imageCapture.takePicture(file, object : ImageCapture.OnImageSavedListener {
+                                    override fun onError(error: ImageCapture.UseCaseError,
+                                                         message: String, exc: Throwable?) {
+                                        hasCaptured = false
+                                    }
+                                    override fun onImageSaved(file: File) {
+                                        hasCaptured = false
+                                    }
+                                })
                             }
-                            override fun onImageSaved(file: File) {
-                                hasCaptured = false
-                            }
-                        })
+                        }
                     }
                 }
             }
