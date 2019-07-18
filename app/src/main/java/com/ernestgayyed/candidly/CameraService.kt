@@ -172,11 +172,10 @@ private class LabelAnalyzer(val cameraService: CameraService) : ImageAnalysis.An
                         imageCapture.takePicture(file, object : ImageCapture.OnImageSavedListener {
                             override fun onError(error: ImageCapture.UseCaseError,
                                                  message: String, exc: Throwable?) {
-                                hasCaptured = false
+
                             }
                             override fun onImageSaved(file: File) {
                                 hasCaptured = false
-                                cameraService.stopSelf()
                             }
                         })
                     }
