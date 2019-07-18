@@ -27,8 +27,7 @@ import java.util.concurrent.TimeUnit
 import android.os.SystemClock
 import android.app.AlarmManager
 import android.app.PendingIntent
-
-
+import com.google.firebase.ml.vision.face.FirebaseVisionFace
 
 
 private var lastAnalyzedTimestamp = 0L
@@ -172,7 +171,7 @@ private class LabelAnalyzer(val cameraService: CameraService) : ImageAnalysis.An
                         imageCapture.takePicture(file, object : ImageCapture.OnImageSavedListener {
                             override fun onError(error: ImageCapture.UseCaseError,
                                                  message: String, exc: Throwable?) {
-
+                                hasCaptured = false
                             }
                             override fun onImageSaved(file: File) {
                                 hasCaptured = false
