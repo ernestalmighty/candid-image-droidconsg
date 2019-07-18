@@ -10,3 +10,4 @@ It will take your selfies every 30 seconds(can be configured) while the app is o
 
 It is using the CameraX to interface the camera, and the face detection feature from Firebase ML kit to detect a face.
 
+Screenshots can be found here: https://github.com/ernestalmighty/candid-imaging/issues/1
