@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
+import android.os.SystemClock
 import android.view.TextureView
 import android.widget.TextView
 import android.widget.Toast
@@ -49,6 +50,11 @@ class MainActivity : AppCompatActivity(), GalleryAdapterListener {
 
         // Request camera permissions
         if (allPermissionsGranted()) {
+            val serviceIntent = Intent(applicationContext, CameraService::class.java)
+            val pendingIntent = PendingIntent.getService(this, 1, serviceIntent, PendingIntent.FLAG_NO_CREATE)
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime() + 30000, pendingIntent)
+
             startService(Intent(this, CameraService::class.java))
         } else {
             ActivityCompat.requestPermissions(

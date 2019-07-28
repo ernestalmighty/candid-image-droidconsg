@@ -106,11 +106,6 @@ class CameraService : LifecycleService() {
 
         CameraX.bindToLifecycle(this, preview, imageCapture, analyzerUseCase)
 
-        val serviceIntent = Intent(applicationContext, CameraService::class.java)
-        val pendingIntent = PendingIntent.getService(this, 1, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.set(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime() + 30000, pendingIntent)
-
         return START_STICKY
     }
 }
@@ -164,24 +159,25 @@ private class LabelAnalyzer(val cameraService: CameraService) : ImageAnalysis.An
         val result = detector.detectInImage(labelImage)
             .addOnSuccessListener { faces ->
                 if(faces.size > 0) {
+                    if(!hasCaptured) {
+                        faces.forEach {
+                            if(it.smilingProbability != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+                                val smilingProb = it.smilingProbability
 
-                    faces.forEach {
-                        if(it.smilingProbability != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
-                            val smilingProb = it.smilingProbability
+                                if(smilingProb >= 0.5) {
+                                    hasCaptured = true
 
-                            if(smilingProb >= 0.5 && !hasCaptured) {
-                                hasCaptured = true
-
-                                val file = createImageFile()
-                                imageCapture.takePicture(file, object : ImageCapture.OnImageSavedListener {
-                                    override fun onError(error: ImageCapture.UseCaseError,
-                                                         message: String, exc: Throwable?) {
-                                        hasCaptured = false
-                                    }
-                                    override fun onImageSaved(file: File) {
-                                        hasCaptured = false
-                                    }
-                                })
+                                    val file = createImageFile()
+                                    imageCapture.takePicture(file, object : ImageCapture.OnImageSavedListener {
+                                        override fun onError(error: ImageCapture.UseCaseError,
+                                                             message: String, exc: Throwable?) {
+                                            hasCaptured = false
+                                        }
+                                        override fun onImageSaved(file: File) {
+                                            hasCaptured = false
+                                        }
+                                    })
+                                }
                             }
                         }
                     }

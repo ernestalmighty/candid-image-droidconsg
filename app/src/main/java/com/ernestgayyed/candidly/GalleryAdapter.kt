@@ -39,5 +39,5 @@ class GalleryAdapter(val context: Context, val galleryAdapterListener: GalleryAd
 
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
